@@ -31,4 +31,4 @@ services:
       - ./html:/usr/share/nginx/html
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "8080:8080"
+      - "80:80"
