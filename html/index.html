@@ -76,8 +76,8 @@
             const expiryDate = document.getElementById('expiry_date').value;
             const type = document.getElementById('type').value;
             const category = document.getElementById('category').value;
-
-            fetch('http://127.0.0.1:5000/generate-pdf', {
+            // http://13.233.223.115/
+            fetch('http://13.233.223.115:80/generate-pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
