@@ -1,0 +1,27 @@
+# version: '3'
+# services:
+#   flask-app:
+#     build: .
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - database
+#   database:
+#     image: mysql:5.7
+#     environment:
+#       MYSQL_ROOT_PASSWORD: example
+#       MYSQL_DATABASE: flaskdb
+#       MYSQL_USER: flaskuser
+#       MYSQL_PASSWORD: flaskpassword
+#     ports:
+#       - "3306:3306"
+
+
+version: '3'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app  # Bind mount the current directory to /app inside the container

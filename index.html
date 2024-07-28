@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold mb-6 text-center">Generate PDF</h1>
+            <form id="pdfForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
+                    <input type="text" id="name" name="name" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name:</label>
+                    <input type="text" id="company_name" name="company_name" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Address:</label>
+                    <input type="text" id="address" name="address" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="reg_date" class="block text-sm font-medium text-gray-700">Registration Date:</label>
+                    <input type="date" id="reg_date" name="reg_date" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="issue_date" class="block text-sm font-medium text-gray-700">Issue Date:</label>
+                    <input type="date" id="issue_date" name="issue_date" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="expiry_date" class="block text-sm font-medium text-gray-700">Expiry Date:</label>
+                    <input type="date" id="expiry_date" name="expiry_date" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="type" class="block text-sm font-medium text-gray-700">Type:</label>
+                    <select id="type" name="type" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="certificate of classification">Certificate of Classification</option>
+                        <option value="external installation">External Installation</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category:</label>
+                    <textarea id="category" name="category" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                <div>
+                    <button type="submit"
+                        class="w-full bg-indigo-600 text-white p-2 rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Generate
+                        PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('pdfForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const companyName = document.getElementById('company_name').value;
+            const address = document.getElementById('address').value;
+            const regDate = document.getElementById('reg_date').value;
+            const issueDate = document.getElementById('issue_date').value;
+            const expiryDate = document.getElementById('expiry_date').value;
+            const type = document.getElementById('type').value;
+            const category = document.getElementById('category').value;
+
+            fetch('http://127.0.0.1:5000/generate-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    company_name: companyName,
+                    address: address,
+                    reg_date: regDate,
+                    issue_date: issueDate,
+                    expiry_date: expiryDate,
+                    type: type,
+                    category: category
+                }),
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'generated.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+
+</html>
