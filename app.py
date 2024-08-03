@@ -10,7 +10,8 @@ from PyPDF2 import PdfReader, PdfWriter
 import random
 import string
 import qrcode
-
+import logging
+import datetime
 import io
 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -22,6 +23,10 @@ from reportlab.lib.units import inch
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+# You can set the level to DEBUG, INFO, WARNING, ERROR, CRITICAL
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 def generate_certificate_number(length=10):
@@ -66,6 +71,7 @@ def create_certificate(name, company_name, reg_date, issue_date, expiry_date, ca
         styles = getSampleStyleSheet()
         styleN = styles["BodyText"]
         styleN.alignment = TA_CENTER
+        styleN.leading = 20
         styleN.fontSize = 20  # Set font size to 20
         company_name_paragraph = Paragraph(f'<b>{company_name}</b>', styleN)
 
@@ -85,10 +91,13 @@ def create_certificate(name, company_name, reg_date, issue_date, expiry_date, ca
         additional_text_paragraph = Paragraph(
             additional_text, additional_text_style)
 
-        data = [[company_name_paragraph], [additional_text_paragraph]]
+        address_paragraph = Paragraph(address, additional_text_style)
+
+        data = [[company_name_paragraph], [
+            address_paragraph], [additional_text_paragraph]]
 
         # Adjust width as necessary
-        table = Table(data, colWidths=[250],  rowHeights=[50, 70])
+        table = Table(data, colWidths=[250],  rowHeights=[50, 30, 70])
         table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -98,7 +107,7 @@ def create_certificate(name, company_name, reg_date, issue_date, expiry_date, ca
 
         # Add table to canvas
         table.wrapOn(c, page_width, 0)
-        table.drawOn(c, 210, 510)
+        table.drawOn(c, 210, 490)
 
         # Additional text
         c.setFont("Helvetica", 12)
@@ -112,10 +121,10 @@ def create_certificate(name, company_name, reg_date, issue_date, expiry_date, ca
 
         c.setFont("Helvetica-Bold", 12)
         office_address_width = c.stringWidth(
-            f"Office: {address}", "Helvetica-Bold", 12)
+            f"Office: {'Electrovolta House, Ministries, Accra, Ghana'}", "Helvetica-Bold", 12)
 
-        c.drawString((page_width)-(office_address_width/2) +
-                     60, 129, f"Office: {address}")
+        c.drawString((page_width)-(office_address_width/2) + 60, 129,
+                     f"Office: {'Electrovolta House, Ministries, Accra, Ghana'}")
 
         # Generate the QR code
         qr_data = f"Name: {name}\nCompany: {company_name}\nReg Date: {reg_date}\nIssue Date: {issue_date}\nExpiry Date: {expiry_date}\nCategory: {category}"
@@ -168,9 +177,10 @@ def create_certificate(name, company_name, reg_date, issue_date, expiry_date, ca
         print(f"Error merging and writing the PDF: {e}")
 
 # Example usage
+# logger.debug(f"Error: {'testtt'}")
 
 
-@app.route('/generate-pdf', methods=['POST'])
+@app.route('/api/generate-pdf', methods=['POST'])
 def generate_pdf():
     try:
         data = request.get_json()
@@ -186,6 +196,12 @@ def generate_pdf():
         category = data.get('category')
         company_name = data.get('company_name')
 
+        if certificate_type == 'external installation':
+            category = 'As a licensed Electrical Contractor to carry out external installation under the provision of Electricity Supply and Distribution (Technical and Operational) Rules, 2005 LI 1816)'
+        else:
+            category = f'{category}, Category 4- Construction of 33kV and 111kV Overhead Line on Wood/Tubular Steel Poles (pole height not exceeding 14m) Underground Cable, Installation of Distribution Transformers and LV Network'
+
+        # logger.debug(f"Error: {category}")
         try:
             pdf_buffer = create_certificate(name, company_name, reg_date,
                                             issue_date, expiryDate, category, certificate_type, address)
@@ -243,9 +259,13 @@ def generate_pdf():
         # pdf_buffer = io.BytesIO()
         # output.write(pdf_buffer)
         # pdf_buffer.seek(0)
+        current_datetime = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        download_name = f"{'license_certificate'}_{current_datetime}.pdf"
+        logger.debug(f"Error: {download_name}")
 
-        return send_file(pdf_buffer, as_attachment=True, download_name="generated.pdf", mimetype='application/pdf')
+        return send_file(pdf_buffer, as_attachment=True, download_name=download_name, mimetype='application/pdf')
     except Exception as e:
+        logger.debug(f"Error: {e}")
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 400
 

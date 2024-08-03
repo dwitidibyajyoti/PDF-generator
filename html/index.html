@@ -47,14 +47,20 @@
                     <label for="type" class="block text-sm font-medium text-gray-700">Type:</label>
                     <select id="type" name="type" required
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="external installation" selected>External Installation</option>
                         <option value="certificate of classification">Certificate of Classification</option>
-                        <option value="external installation">External Installation</option>
                     </select>
                 </div>
-                <div>
+                <div id="category-container" class="hidden">
                     <label for="category" class="block text-sm font-medium text-gray-700">Category:</label>
-                    <textarea id="category" name="category" required
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <select id="category" name="category"
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option selected value="Class A">Class A</option>
+                        <option value="Class B">Class B</option>
+                        <option value="Class C">Class C</option>
+                        <option value="Class D">Class D</option>
+                        <option value="Class E">Class E</option>
+                    </select>
                 </div>
                 <div>
                     <button type="submit"
@@ -65,6 +71,20 @@
         </div>
     </div>
     <script>
+        document.getElementById('type').addEventListener('change', function () {
+            const type = this.value;
+            const categoryContainer = document.getElementById('category-container');
+            const category = document.getElementById('category');
+            if (type === 'certificate of classification') {
+                categoryContainer.classList.remove('hidden');
+                category.setAttribute('required', 'required');
+            } else {
+                categoryContainer.classList.add('hidden');
+                category.removeAttribute('required');
+                category.value = '';
+            }
+        });
+
         document.getElementById('pdfForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -76,8 +96,8 @@
             const expiryDate = document.getElementById('expiry_date').value;
             const type = document.getElementById('type').value;
             const category = document.getElementById('category').value;
-            // http://13.233.223.115/
-            fetch('http://13.233.223.115:80/generate-pdf', {
+            // http://127.0.0.1:5000
+            fetch('/api/generate-pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +110,7 @@
                     issue_date: issueDate,
                     expiry_date: expiryDate,
                     type: type,
-                    category: category
+                    category: type === 'certificate of classification' ? category : '111'
                 }),
             })
                 .then(response => response.blob())
