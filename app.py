@@ -194,12 +194,14 @@ def generate_pdf():
         address = data.get('address')
         certificate_type = data.get('type')
         category = data.get('category')
+        class_type = data.get('class_type')
+
         company_name = data.get('company_name')
 
         if certificate_type == 'external installation':
             category = 'As a licensed Electrical Contractor to carry out external installation under the provision of Electricity Supply and Distribution (Technical and Operational) Rules, 2005 LI 1816)'
         else:
-            category = f'{category}, Category 4- Construction of 33kV and 111kV Overhead Line on Wood/Tubular Steel Poles (pole height not exceeding 14m) Underground Cable, Installation of Distribution Transformers and LV Network'
+            category = f'{class_type}, {category}'
 
         # logger.debug(f"Error: {category}")
         try:
