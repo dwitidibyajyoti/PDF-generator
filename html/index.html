@@ -63,9 +63,20 @@
                     </select>
                 </div>
                 <div id="category-container" class="hidden">
-                    <label for="category" class="block text-sm font-medium text-gray-700">Category:</label>
-                    <textarea id="category" name="category"
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category Type:</label>
+                    <select id="category" name="category"
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option selected value="Construction / Rehabilitation of 33kV Primary Substation">Category 1
+                        </option>
+                        <option value="Construction of 33kV Overhead Line on Steel Lattice Towers">Category 2</option>
+                        <option value="Construction of 33kV Underground Cables">Category 3</option>
+                        <option
+                            value="Construction of 33kV and 111kV Overhead Line on Wood/Tubular Steel Poles (pole height not exceeding 14m) Underground Cable, Installation of Distribution Transformers and LV Network">
+                            Category 4</option>
+                        <option
+                            value="Construction of up to two Poles LV Network Extension and Underground Cable Services (Service Connection)">
+                            Category 5</option>
+                    </select>
                 </div>
                 <div>
                     <button type="submit"
